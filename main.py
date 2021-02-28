@@ -6,7 +6,7 @@ from PIL import Image as Img  # Модуль для  изображений
 from pyperclip import copy  # Модуль для копирования текста в буфер обмена
 from random import sample  # Модуль рандом для генерации пароля
 
-password = '123'
+password = '123456'
 
 
 # Класс для проверки пароля и запуска основного окна
