@@ -7,7 +7,7 @@ from pyperclip import copy  # Модуль для копирования тек�
 from random import sample  # Модуль рандом для генерации пароля
 
 
-login = ''
+login = 'key'
 password = '123456'
 
 
@@ -348,7 +348,6 @@ class Ma1n:
         self.tree.configure(yscroll=self.bar.set)
         self.tree.pack(side=LEFT, fill=BOTH, expand=1)
         self.bar.pack(side=RIGHT, fill=Y)
-
 
 # Класс для окна генерации пароля.
 class Generator:
