@@ -194,6 +194,8 @@ class Ma1n:
                 file.write(decrypted_data)
         except FileNotFoundError:
             self.status['text'] = 'Ошибка. Не могу найти файл. Запуск.'
+            with open(self.filepath, 'w') as file:
+                file.close()
         except (InvalidToken, TypeError):
             self.save()
             self.load()
