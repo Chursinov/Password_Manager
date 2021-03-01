@@ -23,14 +23,14 @@ class Start:
         self.start.bind('<Return>', lambda event: self.check())
 
         self.flag_wrong, self.flag_add, self.flag_show, self.new_login, self.new_password = 0, False, True, 0, 0
-        self.img_lock1 = ImageTk.PhotoImage(Img.open('textures.png').crop((1, 35, 49, 83)))
-        self.img_touch1 = ImageTk.PhotoImage(Img.open('textures.png').crop((50, 35, 114, 99)))
-        self.img_lock2 = ImageTk.PhotoImage(Img.open('textures.png').crop((1, 84, 49, 132)))
-        self.img_touch2 = ImageTk.PhotoImage(Img.open('textures.png').crop((115, 35, 179, 99)))
+        self.img_lock1 = ImageTk.PhotoImage(Img.open('textures.png').crop((83, 1, 130, 49)))
+        self.img_touch1 = ImageTk.PhotoImage(Img.open('textures.png').crop((1, 1, 65, 65)))
+        self.img_lock2 = ImageTk.PhotoImage(Img.open('textures.png').crop((83, 50, 130, 98)))
+        self.img_touch2 = ImageTk.PhotoImage(Img.open('textures.png').crop((1, 66, 65, 130)))
         self.img_enter = ImageTk.PhotoImage(Img.open('textures.png').crop((103, 1, 119, 17)))
-        self.img_voice = ImageTk.PhotoImage(Img.open('textures.png').crop((18, 18, 34, 34)))
-        self.img_visible0 = ImageTk.PhotoImage(Img.open('textures.png').crop((120, 1, 136, 27)))
-        self.img_visible1 = ImageTk.PhotoImage(Img.open('textures.png').crop((137, 1, 153, 27)))
+        self.img_voice = ImageTk.PhotoImage(Img.open('textures.png').crop((66, 55, 82, 71)))
+        self.img_visible0 = ImageTk.PhotoImage(Img.open('textures.png').crop((66, 28, 82, 54)))
+        self.img_visible1 = ImageTk.PhotoImage(Img.open('textures.png').crop((66, 1, 82, 27)))
 
         self.lock_image = Label(self.start, bg='#FFFFFF', image=self.img_lock1)
         self.touch_image = Label(self.start, bg='#FFFFFF', image=self.img_touch1)
@@ -125,7 +125,12 @@ class Ma1n:
     def __init__(self):
         global login
         self.A = []  # Обозначаем пустой список
-        self.flag = False  # Флаг для нажатия на столбец базы данных
+        self.flag = False  # Флаг для обозначения команды
+        self.line = []  # Флаг  выделения строки для копирования
+        self.active = True  # Флаг для отключения кнопок в тулбаре
+        self.symbols = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+        self.values = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 62]
+        self.generated_password = ''
         self.filepath = r'bd'  # Путь к файлу
         self.texture = r'textures.png'  # Путь к иконкам
         try:
@@ -136,24 +141,68 @@ class Ma1n:
             self.key = open(f'{login}.key', 'rb').read()
         self.f = Fernet(self.key)  # Обозначаем бинарный ключ шифрования
         self.columns = ('название', 'вебсайт', 'логин', 'пароль', 'заметки')  # Колонки таблицы
-        self.style = ['#FFFFFF', '#000000', '#FF0000']  # Стиль (тема)
-        # self.style = ['#202020', '#FFFFFF', '#6A8759']  # Резервный стиль (стандартная тема)
+        # self.style = ['#FFFFFF', '#000000', '#FF0000']  # Стиль (тема)
+        self.style = ['#202020', '#FFFFFF', '#6A8759']  # Резервный стиль (стандартная тема)
         self.ma1n = Tk()  # Переменная ma1n это GUI окно
-        self.img_add = ImageTk.PhotoImage(Img.open(self.texture).crop((1, 1, 17, 17)))
-        self.img_chng = ImageTk.PhotoImage(Img.open(self.texture).crop((18, 1, 34, 17)))
-        self.img_del = ImageTk.PhotoImage(Img.open(self.texture).crop((35, 1, 51, 17)))
-        self.img_gnrt = ImageTk.PhotoImage(Img.open(self.texture).crop((52, 1, 68, 17)))
-        self.img_sett = ImageTk.PhotoImage(Img.open(self.texture).crop((69, 1, 85, 17)))
-        self.img_exit = ImageTk.PhotoImage(Img.open(self.texture).crop((86, 1, 102, 17)))
-        self.img_ent = ImageTk.PhotoImage(Img.open(self.texture).crop((103, 1, 119, 17)))
-        self.img_debug = ImageTk.PhotoImage(Img.open(self.texture).crop((1, 18, 17, 34)))
-        self.taskbar()
-        self.data()
-        self.ma1n.geometry('930x250')
+        self.ma1n.geometry('975x300')
         self.ma1n.title('Password Manager')  # Меняем имя главного окна
         self.ma1n.attributes("-topmost", True)
+        self.ma1n.resizable(False, True)
         self.ma1n.configure(bg=self.style[0])  # Меняем главному окну стиль
         self.ma1n.bind('<Return>', lambda event: self.variable.set(1))
+        self.img_add = ImageTk.PhotoImage(Img.open(self.texture).crop((131, 1, 179, 49)))
+        self.img_chng = ImageTk.PhotoImage(Img.open(self.texture).crop((131, 50, 179, 98)))
+        self.img_del = ImageTk.PhotoImage(Img.open(self.texture).crop((180, 1, 228, 49)))
+        self.img_gnrt = ImageTk.PhotoImage(Img.open(self.texture).crop((180, 50, 228, 98)))
+        self.img_sett = ImageTk.PhotoImage(Img.open(self.texture).crop((229, 1, 277, 49)))
+        self.img_exit = ImageTk.PhotoImage(Img.open(self.texture).crop((229, 50, 277, 98)))
+        self.img_ent = ImageTk.PhotoImage(Img.open(self.texture).crop((66, 89, 82, 105)))
+        self.img_debug = ImageTk.PhotoImage(Img.open(self.texture).crop((1, 18, 49, 34)))
+
+        self.taskbar = Frame(self.ma1n, bg=self.style[0])
+        Button(self.taskbar, image=self.img_add, relief=FLAT, border='0', bg=self.style[0], command=self.add).pack()
+        Button(self.taskbar, image=self.img_chng, relief=FLAT, border='0', bg=self.style[0], command=self.edit).pack()
+        Button(self.taskbar, image=self.img_del, relief=FLAT, border='0', bg=self.style[0], command=self.delete).pack()
+        Button(self.taskbar, image=self.img_gnrt, relief=FLAT, border='0', bg=self.style[0], command=self.generate).pack()
+        Button(self.taskbar, image=self.img_sett, relief=FLAT, border='0', bg=self.style[0], command=self.settings).pack()
+        Button(self.taskbar, image=self.img_exit, relief=FLAT, border='0', bg=self.style[0], command=self.close).pack()
+        self.taskbar.place(x=0, y=0)
+        self.toolbar = Frame(self.ma1n, bg=self.style[0])
+        self.top_frame = Frame(self.toolbar, bg=self.style[0])
+        self.variable = IntVar()
+        self.status = Label(self.top_frame, fg=self.style[2], width=63, height=1, bg=self.style[0])
+        self.entry = Entry(self.top_frame, fg=self.style[1], bg=self.style[0], relief=FLAT)
+        self.send_btn = Button(self.top_frame, image=self.img_ent, relief=FLAT, border='0', bg=self.style[0], command=lambda: self.variable.set(1))
+        self.status.place(x=0, y=0, width=708, height=20)
+        self.entry.place(x=708, y=0, width=200, height=20)
+        self.send_btn.place(x=907, y=0)
+        self.top_frame.place(x=0, y=0, width=925, height=22)
+        self.bottom_frame = Frame(self.toolbar, bg=self.style[0])
+        self.stylei = ttk.Style(self.bottom_frame)
+        self.stylei.configure(".", font=('Consolas', 10))
+        self.stylei.configure("Treeview.Heading", font=('Arial', 10, 'bold'), foreground='black')
+        self.tree = ttk.Treeview(self.bottom_frame, show='headings', columns=self.columns)
+        self.tree.heading('название', text='Название')
+        self.tree.column('название', width=95)
+        self.tree.heading('вебсайт', text='Вебсайт')
+        self.tree.column('вебсайт', width=185)
+        self.tree.heading('логин', text='Логин')
+        self.tree.column('логин', width=172)
+        self.tree.heading('пароль', text='Пароль')
+        self.tree.column('пароль', width=250)
+        self.tree.heading('заметки', text='Заметки')
+        self.tree.bind('<<TreeviewSelect>>', self.select)
+        self.bar = ttk.Scrollbar(self.bottom_frame, orient=VERTICAL, command=self.tree.yview)
+        self.tree.configure(yscroll=self.bar.set)
+        self.tree.place(x=0, y=0, width=905, height=280)
+        self.bar.place(x=906, y=0, width=20, height=280)
+        self.bottom_frame.place(x=0, y=23, width=925, height=278)
+        self.generator_frame = Frame(self.toolbar)
+        self.password_label = Label(self.generator_frame, text='', font=('Consolas', 10))
+        self.combo = ttk.Combobox(self.generator_frame, values=self.values, state="readonly")
+        self.combo.current(8)
+        self.status_generator = Label(self.generator_frame, text='Выберите длину:')
+        self.toolbar.place(x=50, y=0, width=925, height=300)
         self.load()
         self.ma1n.mainloop()  # Запуск главного окна
 
@@ -206,84 +255,92 @@ class Ma1n:
 
     # Функция добавления аккаунта в таблицу.
     def add(self):
-        B = []
-        self.flag = 'add'
-        for i in range(5):
-            self.status['text'] = f'[Добавление] Введите {self.columns[i]}: '
-            self.entry.delete(0, END)
-            self.ma1n.wait_variable(self.variable)
-            if self.entry.get() == '':
-                B.append(' ')
-            else:
-                B.append(str(self.entry.get()))
+        if self.active:
+            B = []
+            self.flag = 'add'
+            for i in range(5):
+                self.status['text'] = f'[Добавление] Введите {self.columns[i]}: '
                 self.entry.delete(0, END)
-        self.A.append(B)
-        self.every()
+                self.ma1n.wait_variable(self.variable)
+                if self.entry.get() == '':
+                    B.append(' ')
+                else:
+                    B.append(str(self.entry.get()))
+                    self.entry.delete(0, END)
+            self.A.append(B)
+            self.every()
+        else:
+            pass
 
     # Функция изменения аккаунта в таблице.
     def edit(self):
-        B = []
-        self.flag = 'edit'
-        self.status['text'] = '[Изменение] Выберите имя и нажмите клавишу.'
-        self.entry.delete(0, END)
-        self.ma1n.wait_variable(self.variable)
-        try:
-            if self.line in self.A:
-                for i in range(5):
-                    self.status['text'] = f'[Изменение] Введите {self.columns[i]}. Старое: {self.line[i]} '
-                    self.entry.delete(0, END)
-                    self.ma1n.wait_variable(self.variable)
-                    if self.entry.get() == '':
-                        B.append(str(self.line[i]))
-                    else:
-                        B.append(str(self.entry.get()))
+        if self.active:
+            B = []
+            self.flag = 'edit'
+            self.status['text'] = '[Изменение] Выберите имя и нажмите клавишу.'
+            self.entry.delete(0, END)
+            self.ma1n.wait_variable(self.variable)
+            try:
+                if self.line in self.A:
+                    for i in range(5):
+                        self.status['text'] = f'[Изменение] Введите {self.columns[i]}. Старое: {self.line[i]} '
                         self.entry.delete(0, END)
-                self.A.append(B)
-                self.A.remove(self.line)
-            else:
-                self.status['text'] = '[Изменение] Что-то пошло не так.'
-        except AttributeError:
-            self.status['text'] = '[Изменение] Строчка не существует.'
-        self.every()
+                        self.ma1n.wait_variable(self.variable)
+                        if self.entry.get() == '':
+                            B.append(str(self.line[i]))
+                        else:
+                            B.append(str(self.entry.get()))
+                            self.entry.delete(0, END)
+                    self.A.append(B)
+                    self.A.remove(self.line)
+                else:
+                    self.status['text'] = '[Изменение] Что-то пошло не так.'
+            except AttributeError:
+                self.status['text'] = '[Изменение] Строчка не существует.'
+            self.every()
+        else:
+            pass
 
     # Функция удаления аккаунта из таблицы.
     def delete(self):
-        self.flag = 'delete'
-        self.status['text'] = '[Удаление] Выберите имя и нажмите клавишу.'
-        self.entry.delete(0, END)
-        self.ma1n.wait_variable(self.variable)
-        try:
-            if self.line in self.A:
-                self.A.remove(self.line)
-            else:
-                self.status['text'] = '[Удаление] Что-то пошло не так.'
-        except NameError:
+        if self.active:
+            self.flag = 'delete'
+            self.status['text'] = '[Удаление] Выберите имя и нажмите клавишу.'
+            self.entry.delete(0, END)
+            self.ma1n.wait_variable(self.variable)
+            try:
+                if self.line in self.A:
+                    self.A.remove(self.line)
+                else:
+                    self.status['text'] = '[Удаление] Что-то пошло не так.'
+            except NameError:
+                pass
+            except AttributeError:
+                self.status['text'] = '[Удаление] Строчка не существует.'
+            self.every()
+        else:
             pass
-        except AttributeError:
-            self.status['text'] = '[Удаление] Строчка не существует.'
-        self.every()
 
     # Функция генерации случайного пароля.
-    @staticmethod
-    def generate():
-        _3 = Generator()
+    def generate(self):
+        if self.active:
+            self.active = False
+            self.bottom_frame.place_forget()
+            self.password_label.grid(row=0, column=0, columnspan=3)
+            self.combo.grid(row=1, column=0, columnspan=3)
+            self.status_generator.grid(row=3, column=0, columnspan=3)
+            Button(self.generator_frame, text="Generate", command=self.generate_output).grid(row=2, column=0)
+            Button(self.generator_frame, text="Copy", command=self.generate_copy).grid(row=2, column=1)
+            Button(self.generator_frame, text="Close", command=self.generate_close).grid(row=2, column=2)
+            self.generator_frame.place(x=0, y=23, width=925, height=278)
+        else:
+            pass
 
     # Функция вывода окна с настройками приложения.
     def settings(self):
-        pass
-
-    # Функция отладки (с консолью).
-    def debug(self):
-        try:
-            self.every()
-            print('len(A) = ', len(self.A))
-            print(f'len(A[i]) = {len(self.A[0])}')
-            for i in self.tree.get_children():
-                print(self.tree.item(i)['values'])
-            print('\n')
-            for i in range(len(self.A)):
-                print(self.A[i])
-        except IndexError:
+        if self.active:
+            print('Настройки')
+        else:
             pass
 
     # Функция шифрования и сохранения базы в файл.
@@ -303,86 +360,25 @@ class Ma1n:
         self.save()  # Функция сохранения
         raise SystemExit  # Выход
 
-    # Дизайн боковой панели
-    def taskbar(self):
-        taskbar = Frame(bg=self.style[0])
-        taskbar.pack(side=LEFT, fill=Y)
-        Button(taskbar, image=self.img_add, compound='left', relief=FLAT, bg=self.style[0], command=self.add).pack(expand=1, anchor=NW)
-        Button(taskbar, image=self.img_chng, compound='left', relief=FLAT, bg=self.style[0], command=self.edit).pack(expand=1, anchor=NW)
-        Button(taskbar, image=self.img_del, compound='left', relief=FLAT, bg=self.style[0], command=self.delete).pack(expand=1, anchor=NW)
-        Button(taskbar, image=self.img_gnrt, compound='left', relief=FLAT, bg=self.style[0], command=self.generate).pack(expand=1, anchor=NW)
-        Button(taskbar, image=self.img_sett, compound='left', relief=FLAT, bg=self.style[0], command=self.settings).pack(expand=1, anchor=NW)
-        Button(taskbar, image=self.img_exit, compound='left', relief=FLAT, bg=self.style[0], command=self.close).pack(expand=1, anchor=NW)
-        Button(taskbar, image=self.img_debug, compound='left', relief=FLAT, bg=self.style[0], command=self.debug).pack(expand=1, anchor=NW)
-
-    # Дизайн основного окна
-    def data(self):
-        self.toolbar = Frame(bg=self.style[0])
-        self.toolbar.pack(side=TOP, fill=X)
-        self.top_frame = Frame(self.toolbar, bg=self.style[0])
-        self.top_frame.pack(side=TOP, fill=X)
-        self.status = Label(self.top_frame, fg=self.style[2], width=63, height=1, bg=self.style[0])
-        self.status.pack(side=LEFT, fill=X)
-        self.variable = IntVar()
-        self.send_btn = Button(self.top_frame, image=self.img_ent, relief=FLAT, bg=self.style[0], command=lambda: self.variable.set(1))
-        self.send_btn.pack(side=RIGHT)
-        self.entry = Entry(self.top_frame, fg=self.style[1], bg=self.style[0], relief=FLAT)
-        self.entry.pack(side=RIGHT)
-        self.bottom_frame = Frame(self.toolbar, bg=self.style[0])
-        self.bottom_frame.pack(fill=BOTH, expand=1)
-        self.stylei = ttk.Style()
-        self.stylei.configure(".", font=('Consolas', 10))
-        self.stylei.configure("Treeview.Heading", font=('Arial', 10, 'bold'), foreground='black')
-        self.tree = ttk.Treeview(self.bottom_frame, show='headings', columns=self.columns)
-        self.tree.heading('название', text='Название')
-        self.tree.column('название', width=95)
-        self.tree.heading('вебсайт', text='Вебсайт')
-        self.tree.column('вебсайт', width=185)
-        self.tree.heading('логин', text='Логин')
-        self.tree.column('логин', width=172)
-        self.tree.heading('пароль', text='Пароль')
-        self.tree.column('пароль', width=250)
-        self.tree.heading('заметки', text='Заметки')
-        self.tree.bind('<<TreeviewSelect>>', self.select)
-        self.bar = ttk.Scrollbar(self.bottom_frame, orient=VERTICAL, command=self.tree.yview)
-        self.tree.configure(yscroll=self.bar.set)
-        self.tree.pack(side=LEFT, fill=BOTH, expand=1)
-        self.bar.pack(side=RIGHT, fill=Y)
-
-# Класс для окна генерации пароля.
-class Generator:
-    def __init__(self):
-        self.symbols = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-        self.values = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 62]
-        self.generated_password = ''
-        self.generator = Tk()
-        self.generator.title("Password Generator")
-        self.generator.attributes("-topmost", True)
-        self.password_label = Label(self.generator, text='')
-        self.password_label.grid(row=0, column=0, columnspan=3)
-        self.combo = ttk.Combobox(self.generator, values=self.values, state="readonly")
-        self.combo.current(8)
-        self.combo.grid(row=1, column=0, columnspan=3)
-        self.status_generator = Label(self.generator, text='Выберите длину:')
-        self.status_generator.grid(row=3, column=0, columnspan=3)
-        Button(self.generator, text="Generate", command=self.generate_output).grid(row=2, column=0)
-        Button(self.generator, text="Copy", command=self.generate_copy).grid(row=2, column=1)
-        Button(self.generator, text="Close", command=self.generator.destroy).grid(row=2, column=2)
-        self.generator.mainloop()
-
-    # Функция вывода сгенерированного пароля в окне генерации.
+    # Метод вывода сгенерированного пароля в окне генерации.
     def generate_output(self):
         self.generated_password = str(
             ''.join(sample(self.symbols, int(self.combo.get()))))  # Создаём пароль из случайных символов
         self.password_label['text'] = self.generated_password  # Выводим пароль в Label
 
-    # Функция копирования сгенерированного пароля в окне генерации.
+    # Метод копирования сгенерированного пароля в окне генерации.
     def generate_copy(self):
         try:
             copy(self.generated_password)  # Пытаемся скопировать пароль
             self.status_generator['text'] = 'Скопировано'  # Выводим статус в окно для статуса
         except NameError:  # Если нет пароля
             self.status_generator['text'] = 'Ничего нет.'  # Выводим ошибку в окно для статуса
+
+    # Метод закрытия генерации пароля и выхода в окно с базой
+    def generate_close(self):
+        self.generator_frame.destroy()
+        self.active = True
+        self.bottom_frame.place(x=0, y=23, width=925, height=278)
 
 
 if __name__ == '__main__':
