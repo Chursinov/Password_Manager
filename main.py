@@ -376,7 +376,7 @@ class Ma1n:
 
     # Метод закрытия генерации пароля и выхода в окно с базой
     def generate_close(self):
-        self.generator_frame.destroy()
+        self.generator_frame.place_forget()
         self.active = True
         self.bottom_frame.place(x=0, y=23, width=925, height=278)
 
