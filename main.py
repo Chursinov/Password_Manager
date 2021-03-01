@@ -6,6 +6,8 @@ from PIL import Image as Img  # Модуль для  изображений
 from pyperclip import copy  # Модуль для копирования текста в буфер обмена
 from random import sample  # Модуль рандом для генерации пароля
 
+
+login = ''
 password = '123456'
 
 
@@ -57,15 +59,16 @@ class Start:
 
     #  Метод кнопки
     def check(self):
+        global login
         if self.flag_add:
-            self.new_login = self.entry_login.get()
+            login = self.entry_login.get()
             self.new_password = self.entry_password.get()
             if self.entry_login.get() == '' or self.entry_password.get() == '':
                 self.status['text'] = 'Один или несколько пустых вводов.'
             else:
                 self.entry_login.delete(0, END)
                 self.entry_password.delete(0, END)
-                print(f'login: <{self.new_login}>\npassword: <{self.new_password}>')
+                print(f'login: <{login}>\npassword: <{self.new_password}>')
                 self.lock_image.config(image=self.img_lock2)
                 self.touch_image.config(image=self.img_touch2)
                 self.status.config(fg='#3cd184')
@@ -120,11 +123,17 @@ class Start:
 class Ma1n:
     # Инициализация переменных.
     def __init__(self):
+        global login
         self.A = []  # Обозначаем пустой список
         self.flag = False  # Флаг для нажатия на столбец базы данных
         self.filepath = r'bd'  # Путь к файлу
         self.texture = r'textures.png'  # Путь к иконкам
-        self.key = open('key.key', 'rb').read()  # Открытие файла ключа
+        try:
+            self.key = open('key.key', 'rb').read()  # Открытие файла ключа
+        except FileNotFoundError:
+            with open(f'{login}.key', 'wb') as key_file:
+                key_file.write(Fernet.generate_key())
+            self.key = open(f'{login}.key', 'rb').read()
         self.f = Fernet(self.key)  # Обозначаем бинарный ключ шифрования
         self.columns = ('название', 'вебсайт', 'логин', 'пароль', 'заметки')  # Колонки таблицы
         self.style = ['#FFFFFF', '#000000', '#FF0000']  # Стиль (тема)
