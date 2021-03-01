@@ -20,21 +20,24 @@ class Start:
         self.start.configure(background='#FFFFFF')
         self.start.bind('<Return>', lambda event: self.check())
 
-        self.flag_wrong, self.flag_add, self.new_login, self.new_password = 0, False, 0, 0
+        self.flag_wrong, self.flag_add, self.flag_show, self.new_login, self.new_password = 0, False, True, 0, 0
         self.img_lock1 = ImageTk.PhotoImage(Img.open('textures.png').crop((1, 35, 49, 83)))
         self.img_touch1 = ImageTk.PhotoImage(Img.open('textures.png').crop((50, 35, 114, 99)))
         self.img_lock2 = ImageTk.PhotoImage(Img.open('textures.png').crop((1, 84, 49, 132)))
         self.img_touch2 = ImageTk.PhotoImage(Img.open('textures.png').crop((115, 35, 179, 99)))
         self.img_enter = ImageTk.PhotoImage(Img.open('textures.png').crop((103, 1, 119, 17)))
         self.img_voice = ImageTk.PhotoImage(Img.open('textures.png').crop((18, 18, 34, 34)))
+        self.img_visible0 = ImageTk.PhotoImage(Img.open('textures.png').crop((120, 1, 136, 27)))
+        self.img_visible1 = ImageTk.PhotoImage(Img.open('textures.png').crop((137, 1, 153, 27)))
 
         self.lock_image = Label(self.start, bg='#FFFFFF', image=self.img_lock1)
         self.touch_image = Label(self.start, bg='#FFFFFF', image=self.img_touch1)
         self.status = Label(self.start, text='Place your index finger on the scanner.', bg='#FFFFFF')
-        self.entry_login = ttk.Entry()
-
-        self.entry_password = ttk.Entry()
+        self.entry_login = ttk.Entry(self.start)
+        self.frame_password = Frame(self.start, bg='#000000')
+        self.entry_password = Entry(self.frame_password, fg='#000000', bg='#FFFFFF', relief=FLAT, show='*')
         self.entry_password.focus_force()
+        self.visible_button = Button(self.frame_password, relief='flat', border='0', bg='#FFFFFF', activebackground="#ffffff", image=self.img_visible0, command=self.show)
         self.register_button = Button(self.start, relief='flat', border='0', bg='#FFFFFF', activebackground='#FFFFFF', text='Зарегистрироваться', command=self.register)
         self.check_button = Button(self.start, relief='flat', border='0', bg='#2f3035', activebackground='#202020', fg='#FFFFFF', activeforeground='#FFFFFF', text='Proceed', command=self.check)
         self.voice_button = Button(self.start, relief='flat', border='0', bg='#FFFFFF', activebackground="#ffffff", text=' Voice Assistance', image=self.img_voice, compound="left")
@@ -44,7 +47,9 @@ class Start:
         self.touch_image.place(x=88, y=112)
         self.status.place(x=0, y=185, width=240)
         Label(self.start, bg='#FFFFFF', text='Enter Social Security Number').place(x=20, y=274)
-        self.entry_password.place(x=20, y=295, width=200, height=30)
+        self.frame_password.place(x=20, y=295, width=200, height=30)
+        self.entry_password.place(x=1, y=1, width=180, height=28)
+        self.visible_button.place(x=181, y=1)
         self.check_button.place(x=20, y=345, width=200, height=30)
         self.voice_button.place(x=65, y=415)
 
@@ -93,6 +98,17 @@ class Start:
         self.entry_login.place(x=20, y=235, width=200)
         self.register_button.place_forget()
         self.flag_add = True
+
+    #  Метод видимости пароля
+    def show(self):
+        if self.flag_show:
+            self.visible_button.config(image=self.img_visible1)
+            self.entry_password.config(show='')
+            self.flag_show = False
+        else:
+            self.visible_button.config(image=self.img_visible0)
+            self.entry_password.config(show='*')
+            self.flag_show = True
 
     #  Метод выхода из "стартового" и запуск главного окна
     def leave(self):
