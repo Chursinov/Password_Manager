@@ -197,12 +197,16 @@ class Ma1n:
         self.tree.place(x=0, y=0, width=905, height=280)
         self.bar.place(x=906, y=0, width=20, height=280)
         self.bottom_frame.place(x=0, y=23, width=925, height=278)
+
         self.generator_frame = Frame(self.toolbar)
         self.password_label = Label(self.generator_frame, text='', font=('Consolas', 10))
         self.combo = ttk.Combobox(self.generator_frame, values=self.values, state="readonly")
         self.combo.current(8)
         self.status_generator = Label(self.generator_frame, text='Выберите длину:')
         self.toolbar.place(x=50, y=0, width=925, height=300)
+
+        self.settings_frame = Frame(self.toolbar)
+
         self.load()
         self.ma1n.mainloop()  # Запуск главного окна
 
@@ -328,10 +332,10 @@ class Ma1n:
             self.bottom_frame.place_forget()
             self.password_label.grid(row=0, column=0, columnspan=3)
             self.combo.grid(row=1, column=0, columnspan=3)
-            self.status_generator.grid(row=3, column=0, columnspan=3)
-            Button(self.generator_frame, text="Generate", command=self.generate_output).grid(row=2, column=0)
-            Button(self.generator_frame, text="Copy", command=self.generate_copy).grid(row=2, column=1)
-            Button(self.generator_frame, text="Close", command=self.generate_close).grid(row=2, column=2)
+            Button(self.generator_frame, text="Генерировать", command=self.generate_output).grid(row=2, column=0)
+            Button(self.generator_frame, text="Скопировать", command=self.generate_copy).grid(row=3, column=0)
+            Button(self.generator_frame, text="Закрыть", command=self.generate_close).grid(row=4, column=0)
+            self.status_generator.grid(row=5, column=0, columnspan=3)
             self.generator_frame.place(x=0, y=23, width=925, height=278)
         else:
             pass
@@ -339,7 +343,10 @@ class Ma1n:
     # Функция вывода окна с настройками приложения.
     def settings(self):
         if self.active:
-            print('Настройки')
+            self.active = False
+            self.bottom_frame.place_forget()
+            Button(self.settings_frame, text="Закрыть", command=self.settings_close).grid(row=2, column=2)
+            self.settings_frame.place(x=0, y=23, width=925, height=278)
         else:
             pass
 
@@ -377,6 +384,12 @@ class Ma1n:
     # Метод закрытия генерации пароля и выхода в окно с базой
     def generate_close(self):
         self.generator_frame.place_forget()
+        self.active = True
+        self.bottom_frame.place(x=0, y=23, width=925, height=278)
+
+    # Метод закрытия настроек и выхода в окно с базой
+    def settings_close(self):
+        self.settings_frame.place_forget()
         self.active = True
         self.bottom_frame.place(x=0, y=23, width=925, height=278)
 
