@@ -1,4 +1,4 @@
-# PASSWORD MANAGER
+# PASSWORD MANAGER [BETA] [BETA] [BETA] 
 ## потом добавить описание программы
 ## Content
 - [Introduction](https://github.com/Chursinov/Password_Manager#password-manager)
