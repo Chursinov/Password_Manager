@@ -123,7 +123,6 @@ class Start:
 class Ma1n:
     # Инициализация переменных.
     def __init__(self):
-        global login
         self.A = []  # Обозначаем пустой список
         self.flag = False  # Флаг для обозначения команды
         self.line = []  # Флаг  выделения строки для копирования
@@ -139,45 +138,50 @@ class Ma1n:
             with open(f'{login}.key', 'wb') as key_file:
                 key_file.write(Fernet.generate_key())
             self.key = open(f'{login}.key', 'rb').read()
+
         self.f = Fernet(self.key)  # Обозначаем бинарный ключ шифрования
         self.columns = ('название', 'вебсайт', 'логин', 'пароль', 'заметки')  # Колонки таблицы
-        # self.style = ['#FFFFFF', '#000000', '#FF0000']  # Стиль (тема)
-        self.style = ['#202020', '#FFFFFF', '#6A8759']  # Резервный стиль (стандартная тема)
+        self.style = {'bg': '#3C8080', 'fg': '#C38080', 'text': '#C38080'}  # Резервный стиль (стандартная тема)
+
         self.ma1n = Tk()  # Переменная ma1n это GUI окно
-        self.ma1n.geometry('975x300')
+        self.ma1n.geometry('975x400+50+50')
         self.ma1n.title('Password Manager')  # Меняем имя главного окна
         self.ma1n.attributes("-topmost", True)
+        self.ma1n.overrideredirect(True)
         self.ma1n.resizable(False, True)
-        self.ma1n.configure(bg=self.style[0])  # Меняем главному окну стиль
+        self.ma1n.configure(bg=self.style['bg'])  # Меняем главному окну стиль
         self.ma1n.bind('<Return>', lambda event: self.variable.set(1))
         self.img_add = ImageTk.PhotoImage(Img.open(self.texture).crop((131, 1, 179, 49)))
         self.img_chng = ImageTk.PhotoImage(Img.open(self.texture).crop((131, 50, 179, 98)))
         self.img_del = ImageTk.PhotoImage(Img.open(self.texture).crop((180, 1, 228, 49)))
         self.img_gnrt = ImageTk.PhotoImage(Img.open(self.texture).crop((180, 50, 228, 98)))
+        self.img_2fa = ImageTk.PhotoImage(Img.open(self.texture).crop((278, 1, 326, 49)))
+        self.img_card = ImageTk.PhotoImage(Img.open(self.texture).crop((278, 50, 326, 98)))
         self.img_sett = ImageTk.PhotoImage(Img.open(self.texture).crop((229, 1, 277, 49)))
         self.img_exit = ImageTk.PhotoImage(Img.open(self.texture).crop((229, 50, 277, 98)))
         self.img_ent = ImageTk.PhotoImage(Img.open(self.texture).crop((66, 89, 82, 105)))
-        self.img_debug = ImageTk.PhotoImage(Img.open(self.texture).crop((1, 18, 49, 34)))
 
-        self.taskbar = Frame(self.ma1n, bg=self.style[0])
-        Button(self.taskbar, image=self.img_add, relief=FLAT, border='0', bg=self.style[0], command=self.add).pack()
-        Button(self.taskbar, image=self.img_chng, relief=FLAT, border='0', bg=self.style[0], command=self.edit).pack()
-        Button(self.taskbar, image=self.img_del, relief=FLAT, border='0', bg=self.style[0], command=self.delete).pack()
-        Button(self.taskbar, image=self.img_gnrt, relief=FLAT, border='0', bg=self.style[0], command=self.generate).pack()
-        Button(self.taskbar, image=self.img_sett, relief=FLAT, border='0', bg=self.style[0], command=self.settings).pack()
-        Button(self.taskbar, image=self.img_exit, relief=FLAT, border='0', bg=self.style[0], command=self.close).pack()
+        self.taskbar = Frame(self.ma1n, bg=self.style['bg'])
+        Button(self.taskbar, image=self.img_add, relief=FLAT, border='0', bg=self.style['bg'], command=self.add).pack()
+        Button(self.taskbar, image=self.img_chng, relief=FLAT, border='0', bg=self.style['bg'], command=self.edit).pack()
+        Button(self.taskbar, image=self.img_del, relief=FLAT, border='0', bg=self.style['bg'], command=self.delete).pack()
+        Button(self.taskbar, image=self.img_gnrt, relief=FLAT, border='0', bg=self.style['bg'], command=self.generate).pack()
+        Button(self.taskbar, image=self.img_2fa, relief=FLAT, border='0', bg=self.style['bg'], command=None).pack()
+        Button(self.taskbar, image=self.img_card, relief=FLAT, border='0', bg=self.style['bg'], command=None).pack()
+        Button(self.taskbar, image=self.img_sett, relief=FLAT, border='0', bg=self.style['bg'], command=self.settings).pack()
+        Button(self.taskbar, image=self.img_exit, relief=FLAT, border='0', bg=self.style['bg'], command=self.close).pack()
         self.taskbar.place(x=0, y=0)
-        self.toolbar = Frame(self.ma1n, bg=self.style[0])
-        self.top_frame = Frame(self.toolbar, bg=self.style[0])
+        self.toolbar = Frame(self.ma1n, bg=self.style['bg'])
+        self.top_frame = Frame(self.toolbar, bg=self.style['bg'])
         self.variable = IntVar()
-        self.status = Label(self.top_frame, fg=self.style[2], width=63, height=1, bg=self.style[0])
-        self.entry = Entry(self.top_frame, fg=self.style[1], bg=self.style[0], relief=FLAT)
-        self.send_btn = Button(self.top_frame, image=self.img_ent, relief=FLAT, border='0', bg=self.style[0], command=lambda: self.variable.set(1))
+        self.status = Label(self.top_frame, fg=self.style['text'], width=63, height=1, bg=self.style['bg'])
+        self.entry = Entry(self.top_frame, fg=self.style['fg'], bg=self.style['bg'], relief=FLAT)
+        self.send_btn = Button(self.top_frame, image=self.img_ent, relief=FLAT, border='0', bg=self.style['bg'], command=lambda: self.variable.set(1))
         self.status.place(x=0, y=0, width=708, height=20)
         self.entry.place(x=708, y=0, width=200, height=20)
         self.send_btn.place(x=907, y=0)
         self.top_frame.place(x=0, y=0, width=925, height=22)
-        self.bottom_frame = Frame(self.toolbar, bg=self.style[0])
+        self.bottom_frame = Frame(self.toolbar, bg=self.style['bg'])
         self.stylei = ttk.Style(self.bottom_frame)
         self.stylei.configure(".", font=('Consolas', 10))
         self.stylei.configure("Treeview.Heading", font=('Arial', 10, 'bold'), foreground='black')
@@ -194,16 +198,16 @@ class Ma1n:
         self.tree.bind('<<TreeviewSelect>>', self.select)
         self.bar = ttk.Scrollbar(self.bottom_frame, orient=VERTICAL, command=self.tree.yview)
         self.tree.configure(yscroll=self.bar.set)
-        self.tree.place(x=0, y=0, width=905, height=280)
-        self.bar.place(x=906, y=0, width=20, height=280)
-        self.bottom_frame.place(x=0, y=23, width=925, height=278)
+        self.tree.place(x=0, y=0, width=905, height=480)
+        self.bar.place(x=906, y=0, width=20, height=480)
+        self.bottom_frame.place(x=0, y=23, width=925, height=478)
 
         self.generator_frame = Frame(self.toolbar)
         self.password_label = Label(self.generator_frame, text='', font=('Consolas', 10))
         self.combo = ttk.Combobox(self.generator_frame, values=self.values, state="readonly")
         self.combo.current(8)
         self.status_generator = Label(self.generator_frame, text='Выберите длину:')
-        self.toolbar.place(x=50, y=0, width=925, height=300)
+        self.toolbar.place(x=50, y=0, width=925, height=400)
 
         self.settings_frame = Frame(self.toolbar)
 
@@ -238,7 +242,7 @@ class Ma1n:
             self.tree.insert('', END, values=i)
         self.ma1n.update()
 
-    # Функция раскодирования и загрузки базы из файла.
+    # Функция декодирования и загрузки базы из файла.
     def load(self):
         try:
             with open(self.filepath, 'rb') as file:
