@@ -124,7 +124,7 @@ class Ma1n:
     # Инициализация переменных.
     def __init__(self):
         self.A = []  # Обозначаем пустой список
-        self.flag = False  # Флаг для обозначения команды
+        self.flag = {'data': False, 'twofactor': False, 'creditcard': False, 'settings': False}
         self.line = []  # Флаг  выделения строки для копирования
         self.active = True  # Флаг для отключения кнопок в тулбаре
         self.symbols = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
@@ -168,7 +168,7 @@ class Ma1n:
         Button(self.taskbar, image=self.img_gnrt, relief=FLAT, border='0', bg=self.style['bg'], command=self.generate).pack()
         Button(self.taskbar, image=self.img_2fa, relief=FLAT, border='0', bg=self.style['bg'], command=None).pack()
         Button(self.taskbar, image=self.img_card, relief=FLAT, border='0', bg=self.style['bg'], command=None).pack()
-        Button(self.taskbar, image=self.img_sett, relief=FLAT, border='0', bg=self.style['bg'], command=self.settings).pack()
+        Button(self.taskbar, image=self.img_sett, relief=FLAT, border='0', bg=self.style['bg'], command=lambda: self.settings()).pack()
         Button(self.taskbar, image=self.img_exit, relief=FLAT, border='0', bg=self.style['bg'], command=self.close).pack()
         self.taskbar.place(x=0, y=0)
         self.toolbar = Frame(self.ma1n, bg=self.style['bg'])
@@ -216,23 +216,23 @@ class Ma1n:
 
     # Функция нажатия на столбец по выбору.
     def select(self, _event):
-        if not self.flag:  # Если флажок по умолчанию = False
+        if not self.flag['data']:  # Если флажок по умолчанию = False
             for selection in self.tree.selection():
                 pwd = self.tree.item(selection)['values'][3]
                 self.status['text'] = f'Скопировано: <{str(pwd)}>'
                 copy(pwd)
-        elif self.flag == 'delete':
+        elif self.flag['data'] == 'delete':
             for selection in self.tree.selection():
                 self.line = self.tree.item(selection)['values']
                 self.status['text'] = f'Удалить [{self.line[0]}]?'
-        elif self.flag == 'edit':
+        elif self.flag['data'] == 'edit':
             for selection in self.tree.selection():
                 self.line = self.tree.item(selection)['values']
                 self.status['text'] = f'Редактировать [{self.line[0]}]?'
 
     # Функция, постоянно выполняющаяся после каждой команды.
     def every(self):
-        self.flag = False
+        self.flag['data'] = False
         self.status['text'] = ''
         self.entry.delete(0, END)
         for i in self.tree.get_children():
@@ -265,7 +265,7 @@ class Ma1n:
     def add(self):
         if self.active:
             B = []
-            self.flag = 'add'
+            self.flag['data'] = 'add'
             for i in range(5):
                 self.status['text'] = f'[Добавление] Введите {self.columns[i]}: '
                 self.entry.delete(0, END)
@@ -284,7 +284,7 @@ class Ma1n:
     def edit(self):
         if self.active:
             B = []
-            self.flag = 'edit'
+            self.flag['data'] = 'edit'
             self.status['text'] = '[Изменение] Выберите имя и нажмите клавишу.'
             self.entry.delete(0, END)
             self.ma1n.wait_variable(self.variable)
@@ -312,7 +312,7 @@ class Ma1n:
     # Функция удаления аккаунта из таблицы.
     def delete(self):
         if self.active:
-            self.flag = 'delete'
+            self.flag['data'] = 'delete'
             self.status['text'] = '[Удаление] Выберите имя и нажмите клавишу.'
             self.entry.delete(0, END)
             self.ma1n.wait_variable(self.variable)
