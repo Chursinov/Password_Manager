@@ -8,7 +8,7 @@ from random import sample  # Модуль рандом для генерации
 
 
 login = 'key'
-password = '123456'
+password = '1'
 
 
 # Класс для проверки пароля и запуска основного окна
@@ -116,7 +116,7 @@ class Start:
     #  Метод выхода из "стартового" и запуск главного окна
     def leave(self):
         self.start.destroy()
-        _2 = Ma1n()
+        _ = Ma1n()
 
 
 # Класс для основного окна.
@@ -124,9 +124,8 @@ class Ma1n:
     # Инициализация переменных.
     def __init__(self):
         self.A = []  # Обозначаем пустой список
-        self.flag = {'data': False, 'twofactor': False, 'creditcard': False, 'settings': False}
+        self.flag = 'true'
         self.line = []  # Флаг  выделения строки для копирования
-        self.active = True  # Флаг для отключения кнопок в тулбаре
         self.symbols = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
         self.values = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 62]
         self.generated_password = ''
@@ -165,9 +164,9 @@ class Ma1n:
         Button(self.taskbar, image=self.img_add, relief=FLAT, border='0', bg=self.style['bg'], command=self.add).pack()
         Button(self.taskbar, image=self.img_chng, relief=FLAT, border='0', bg=self.style['bg'], command=self.edit).pack()
         Button(self.taskbar, image=self.img_del, relief=FLAT, border='0', bg=self.style['bg'], command=self.delete).pack()
-        Button(self.taskbar, image=self.img_gnrt, relief=FLAT, border='0', bg=self.style['bg'], command=self.generate).pack()
-        Button(self.taskbar, image=self.img_2fa, relief=FLAT, border='0', bg=self.style['bg'], command=None).pack()
-        Button(self.taskbar, image=self.img_card, relief=FLAT, border='0', bg=self.style['bg'], command=None).pack()
+        Button(self.taskbar, image=self.img_gnrt, relief=FLAT, border='0', bg=self.style['bg'], command=lambda: self.generate()).pack()
+        Button(self.taskbar, image=self.img_2fa, relief=FLAT, border='0', bg=self.style['bg'], command=lambda: self.twofactor()).pack()
+        Button(self.taskbar, image=self.img_card, relief=FLAT, border='0', bg=self.style['bg'], command=lambda: self.card()).pack()
         Button(self.taskbar, image=self.img_sett, relief=FLAT, border='0', bg=self.style['bg'], command=lambda: self.settings()).pack()
         Button(self.taskbar, image=self.img_exit, relief=FLAT, border='0', bg=self.style['bg'], command=self.close).pack()
         self.taskbar.place(x=0, y=0)
@@ -209,30 +208,43 @@ class Ma1n:
         self.status_generator = Label(self.generator_frame, text='Выберите длину:')
         self.toolbar.place(x=50, y=0, width=925, height=400)
 
+        self.twofactor_frame = Frame(self.toolbar)
+        self.twofactor_label = Label(self.twofactor_frame, text='Коды 2 факторной аутентификации', font=('Consolas', 10))
+
+        self.card_frame = Frame(self.toolbar)
+        self.card_label = Label(self.card_frame, text='Кредитные карты', font=('Consolas', 10))
+
         self.settings_frame = Frame(self.toolbar)
+        self.tip_label = Label(self.settings_frame, text='Введите цвет фона и цвет текста приложения', font=('Consolas', 10))
+        self.preview_label = Label(self.settings_frame, text='Так будет выглядеть текст', font=('Consolas', 10))
+        self.bg_color_entry = Entry(self.settings_frame, font=('Consolas', 10))
+        self.fg_color_entry = Entry(self.settings_frame, font=('Consolas', 10))
+        self.preview_button = Button(self.settings_frame, text='Предпросмотр', relief=FLAT, border='0', command=lambda: self.change_preview())
+        self.change_button = Button(self.settings_frame, text='Изменить', relief=FLAT, border='0', command=lambda: self.change_theme())
+        self.settings_label = Label(self.settings_frame, text='Настройки', font=('Consolas', 10))
 
         self.load()
         self.ma1n.mainloop()  # Запуск главного окна
 
     # Функция нажатия на столбец по выбору.
     def select(self, _event):
-        if not self.flag['data']:  # Если флажок по умолчанию = False
+        if self.flag == 'true':  # Если флажок по умолчанию = True
             for selection in self.tree.selection():
                 pwd = self.tree.item(selection)['values'][3]
                 self.status['text'] = f'Скопировано: <{str(pwd)}>'
                 copy(pwd)
-        elif self.flag['data'] == 'delete':
+        elif self.flag == 'delete':
             for selection in self.tree.selection():
                 self.line = self.tree.item(selection)['values']
                 self.status['text'] = f'Удалить [{self.line[0]}]?'
-        elif self.flag['data'] == 'edit':
+        elif self.flag == 'edit':
             for selection in self.tree.selection():
                 self.line = self.tree.item(selection)['values']
                 self.status['text'] = f'Редактировать [{self.line[0]}]?'
 
     # Функция, постоянно выполняющаяся после каждой команды.
     def every(self):
-        self.flag['data'] = False
+        self.flag = 'true'
         self.status['text'] = ''
         self.entry.delete(0, END)
         for i in self.tree.get_children():
@@ -263,9 +275,9 @@ class Ma1n:
 
     # Функция добавления аккаунта в таблицу.
     def add(self):
-        if self.active:
+        if self.flag == 'true':
             B = []
-            self.flag['data'] = 'add'
+            self.flag = 'add'
             for i in range(5):
                 self.status['text'] = f'[Добавление] Введите {self.columns[i]}: '
                 self.entry.delete(0, END)
@@ -282,9 +294,9 @@ class Ma1n:
 
     # Функция изменения аккаунта в таблице.
     def edit(self):
-        if self.active:
+        if self.flag == 'true':
             B = []
-            self.flag['data'] = 'edit'
+            self.flag = 'edit'
             self.status['text'] = '[Изменение] Выберите имя и нажмите клавишу.'
             self.entry.delete(0, END)
             self.ma1n.wait_variable(self.variable)
@@ -311,8 +323,8 @@ class Ma1n:
 
     # Функция удаления аккаунта из таблицы.
     def delete(self):
-        if self.active:
-            self.flag['data'] = 'delete'
+        if self.flag == 'true':
+            self.flag = 'delete'
             self.status['text'] = '[Удаление] Выберите имя и нажмите клавишу.'
             self.entry.delete(0, END)
             self.ma1n.wait_variable(self.variable)
@@ -331,28 +343,66 @@ class Ma1n:
 
     # Функция генерации случайного пароля.
     def generate(self):
-        if self.active:
-            self.active = False
+        if self.flag == 'true':
+            self.flag = 'generate'
             self.bottom_frame.place_forget()
             self.password_label.grid(row=0, column=0, columnspan=3)
             self.combo.grid(row=1, column=0, columnspan=3)
             Button(self.generator_frame, text="Генерировать", command=self.generate_output).grid(row=2, column=0)
             Button(self.generator_frame, text="Скопировать", command=self.generate_copy).grid(row=3, column=0)
-            Button(self.generator_frame, text="Закрыть", command=self.generate_close).grid(row=4, column=0)
             self.status_generator.grid(row=5, column=0, columnspan=3)
             self.generator_frame.place(x=0, y=23, width=925, height=278)
         else:
-            pass
+            if self.flag == 'generate':
+                self.flag = 'true'
+                self.generator_frame.place_forget()
+                self.bottom_frame.place(x=0, y=23, width=925, height=278)
+
+    # Функция вывода окна с кодами 2FA.
+    def twofactor(self):
+        if self.flag == 'true':
+            self.flag = '2fa'
+            self.bottom_frame.place_forget()
+            self.twofactor_label.place(x=0, y=0)
+            self.twofactor_frame.place(x=0, y=23, width=925, height=278)
+        else:
+            if self.flag == '2fa':
+                self.flag = 'true'
+                self.twofactor_frame.place_forget()
+                self.bottom_frame.place(x=0, y=23, width=925, height=278)
+
+    # Функция вывода окна с кредитными картами.
+    def card(self):
+        if self.flag == 'true':
+            self.flag = 'card'
+            self.bottom_frame.place_forget()
+            self.card_label.place(x=0, y=0)
+            self.card_frame.place(x=0, y=23, width=925, height=278)
+        else:
+            if self.flag == 'card':
+                self.flag = 'true'
+                self.card_frame.place_forget()
+                self.bottom_frame.place(x=0, y=23, width=925, height=278)
 
     # Функция вывода окна с настройками приложения.
     def settings(self):
-        if self.active:
-            self.active = False
+        if self.flag == 'true':
+            self.flag = 'settings'
             self.bottom_frame.place_forget()
-            Button(self.settings_frame, text="Закрыть", command=self.settings_close).grid(row=2, column=2)
+
+            self.settings_label.place(x=50, y=50, height=25)
+            self.tip_label.place(x=50, y=100, height=25)
+            self.bg_color_entry.place(x=50, y=125, width=100, height=25)
+            self.fg_color_entry.place(x=150, y=125, width=100, height=25)
+            self.preview_button.place(x=250, y=125, width=100, height=25)
+            self.preview_label.place(x=50, y=150, width=200, height=25)
+            self.change_button.place(x=250, y=150, width=100, height=25)
             self.settings_frame.place(x=0, y=23, width=925, height=278)
         else:
-            pass
+            if self.flag == 'settings':
+                self.flag = 'true'
+                self.settings_frame.place_forget()
+                self.bottom_frame.place(x=0, y=23, width=925, height=278)
 
     # Функция шифрования и сохранения базы в файл.
     def save(self):
@@ -368,8 +418,11 @@ class Ma1n:
 
     # Функция закрытия приложения.
     def close(self):
-        self.save()  # Функция сохранения
-        raise SystemExit  # Выход
+        if self.flag == 'true':
+            self.save()  # Функция сохранения
+            raise SystemExit  # Выход
+        else:
+            pass
 
     # Метод вывода сгенерированного пароля в окне генерации.
     def generate_output(self):
@@ -385,18 +438,21 @@ class Ma1n:
         except NameError:  # Если нет пароля
             self.status_generator['text'] = 'Ничего нет.'  # Выводим ошибку в окно для статуса
 
-    # Метод закрытия генерации пароля и выхода в окно с базой
-    def generate_close(self):
-        self.generator_frame.place_forget()
-        self.active = True
-        self.bottom_frame.place(x=0, y=23, width=925, height=278)
+    # Метод изменения темы для ознакомления
+    def change_preview(self):
+        try:
+            self.preview_label.config(bg=self.bg_color_entry.get(), fg=self.fg_color_entry.get())
+        except Exception as e:
+            self.tip_label.config(text=e)
 
-    # Метод закрытия настроек и выхода в окно с базой
-    def settings_close(self):
-        self.settings_frame.place_forget()
-        self.active = True
-        self.bottom_frame.place(x=0, y=23, width=925, height=278)
+    # Метод изменения темы для всего приложения
+    def change_theme(self):
+        try:
+            self.style['bg'] = self.bg_color_entry.get()
+            self.style['fg'] = self.fg_color_entry.get()
+        except Exception as e:
+            self.tip_label.config(text=e)
 
 
 if __name__ == '__main__':
-    _1 = Start()
+    _ = Start()
