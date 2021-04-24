@@ -124,7 +124,7 @@ class Ma1n:
     # Инициализация переменных.
     def __init__(self):
         self.A = []  # Обозначаем пустой список
-        self.flag = 'true'
+        self.flag = False
         self.line = []  # Флаг  выделения строки для копирования
         self.symbols = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
         self.values = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 62]
@@ -228,7 +228,7 @@ class Ma1n:
 
     # Функция нажатия на столбец по выбору.
     def select(self, _event):
-        if self.flag == 'true':  # Если флажок по умолчанию = True
+        if not self.flag:  # Если флажок по умолчанию = True
             for selection in self.tree.selection():
                 pwd = self.tree.item(selection)['values'][3]
                 self.status['text'] = f'Скопировано: <{str(pwd)}>'
@@ -244,7 +244,7 @@ class Ma1n:
 
     # Функция, постоянно выполняющаяся после каждой команды.
     def every(self):
-        self.flag = 'true'
+        self.flag = False
         self.status['text'] = ''
         self.entry.delete(0, END)
         for i in self.tree.get_children():
@@ -275,7 +275,7 @@ class Ma1n:
 
     # Функция добавления аккаунта в таблицу.
     def add(self):
-        if self.flag == 'true':
+        if not self.flag:
             B = []
             self.flag = 'add'
             for i in range(5):
@@ -294,7 +294,7 @@ class Ma1n:
 
     # Функция изменения аккаунта в таблице.
     def edit(self):
-        if self.flag == 'true':
+        if not self.flag:
             B = []
             self.flag = 'edit'
             self.status['text'] = '[Изменение] Выберите имя и нажмите клавишу.'
@@ -323,7 +323,7 @@ class Ma1n:
 
     # Функция удаления аккаунта из таблицы.
     def delete(self):
-        if self.flag == 'true':
+        if not self.flag:
             self.flag = 'delete'
             self.status['text'] = '[Удаление] Выберите имя и нажмите клавишу.'
             self.entry.delete(0, END)
@@ -343,7 +343,7 @@ class Ma1n:
 
     # Функция генерации случайного пароля.
     def generate(self):
-        if self.flag == 'true':
+        if not self.flag:
             self.flag = 'generate'
             self.bottom_frame.place_forget()
             self.password_label.grid(row=0, column=0, columnspan=3)
@@ -354,39 +354,39 @@ class Ma1n:
             self.generator_frame.place(x=0, y=23, width=925, height=278)
         else:
             if self.flag == 'generate':
-                self.flag = 'true'
+                self.flag = False
                 self.generator_frame.place_forget()
                 self.bottom_frame.place(x=0, y=23, width=925, height=278)
 
     # Функция вывода окна с кодами 2FA.
     def twofactor(self):
-        if self.flag == 'true':
+        if not self.flag:
             self.flag = '2fa'
             self.bottom_frame.place_forget()
             self.twofactor_label.place(x=0, y=0)
             self.twofactor_frame.place(x=0, y=23, width=925, height=278)
         else:
             if self.flag == '2fa':
-                self.flag = 'true'
+                self.flag = False
                 self.twofactor_frame.place_forget()
                 self.bottom_frame.place(x=0, y=23, width=925, height=278)
 
     # Функция вывода окна с кредитными картами.
     def card(self):
-        if self.flag == 'true':
+        if not self.flag:
             self.flag = 'card'
             self.bottom_frame.place_forget()
             self.card_label.place(x=0, y=0)
             self.card_frame.place(x=0, y=23, width=925, height=278)
         else:
             if self.flag == 'card':
-                self.flag = 'true'
+                self.flag = False
                 self.card_frame.place_forget()
                 self.bottom_frame.place(x=0, y=23, width=925, height=278)
 
     # Функция вывода окна с настройками приложения.
     def settings(self):
-        if self.flag == 'true':
+        if not self.flag:
             self.flag = 'settings'
             self.bottom_frame.place_forget()
 
@@ -400,7 +400,7 @@ class Ma1n:
             self.settings_frame.place(x=0, y=23, width=925, height=278)
         else:
             if self.flag == 'settings':
-                self.flag = 'true'
+                self.flag = False
                 self.settings_frame.place_forget()
                 self.bottom_frame.place(x=0, y=23, width=925, height=278)
 
@@ -418,7 +418,7 @@ class Ma1n:
 
     # Функция закрытия приложения.
     def close(self):
-        if self.flag == 'true':
+        if not self.flag:
             self.save()  # Функция сохранения
             raise SystemExit  # Выход
         else:
@@ -450,6 +450,15 @@ class Ma1n:
         try:
             self.style['bg'] = self.bg_color_entry.get()
             self.style['fg'] = self.fg_color_entry.get()
+            self.taskbar.config(bg=self.style['bg'])
+            self.toolbar.config(bg=self.style['bg'])
+            self.top_frame.config(bg=self.style['bg'])
+            self.status.config(bg=self.style['bg'])
+            self.entry.config(bg=self.style['bg'], fg=self.style['fg'])
+            self.send_btn.config(bg=self.style['bg'])
+            self.bottom_frame.config(bg=self.style['bg'])
+
+            self.ma1n.configure(bg=self.style['bg'])
         except Exception as e:
             self.tip_label.config(text=e)
 
